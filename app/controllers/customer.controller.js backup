@@ -1,0 +1,222 @@
+const db = require("../models");
+const Customer = db.customers;
+const fs = require("fs");
+  //C:\Users\Administrator\AngularNodeExpressMySQL\node-js-server\resources\static\assets
+  //C:\Users\Administrator\AngularNodeExpressMySQL\node-js-server\app\resources\static\assets\uploads\
+  global.__basedir = __dirname;
+
+// Create and Save a new User
+exports.create = (req, res) => {
+  console.log("Hello")
+    try {
+      console.log(req);
+  
+      if (req.files === undefined) {
+        return res.send(`You must select a file.`);
+        console.log("You must select a file.");
+      }
+      else{
+        console.log("test this")
+      }
+  
+      Customer.create({
+        cname: req.body.cname,
+        dob: req.body.dob,
+        gender: req.body.gender,
+        caddress: req.body.caddress,
+        cpassword: req.body.cpassword,
+        status: req.body.status ? req.body.status : true,
+        cpic: req.file.cpic,
+        cidproof: req.file.cidproof,
+        
+        
+      }).then(data => {
+            return res.send(data);
+            console.log(data)
+            return res.send(`File has been uploaded.`);
+      });
+    } catch (error) {
+      console.log(error);
+      return res.send(`Error when trying uploads: ${error}`);
+    }
+};
+
+//Retrieve all Customers from the database.
+exports.findAll = (req, res) => {
+  const cname = req.query.cname;
+  var condition = cname ? { cname: { $regex: new RegExp(cname), $options: "i" } } : {};
+
+  Customer.find(condition)
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving."
+      });
+    });
+};
+
+// // Retrieve all Users from the database.
+// exports.findLoginDetails = (req, res) => {
+//   const email = req.body.email;
+
+//   User.findAll({ where: {
+//     email:email} })
+//     .then(data => {
+//       res.send(data);
+//     })
+//     .catch(err => {
+//       res.status(500).send({
+//         message:
+//           err.message || "Some error occurred while retrieving Users."
+//       });
+//     });
+// };
+
+// // Find a single Question with an id
+exports.findOne = (req, res) => {
+  const id = req.params.id;
+
+  Customer.findById(id)
+  .then(data => {
+    if (!data)
+      res.status(404).send({ message: "Not found Customer with id " + id });
+    else res.send(data);
+  })
+  .catch(err => {
+    res
+      .status(500)
+      .send({ message: "Error retrieving Customer with id=" + id });
+  });
+};
+
+// // Update a User by the id in the request
+// exports.update = (req, res) => {
+//   const id = req.params.id;
+
+//   User.update(req.body, {
+//     where: { id: id }
+//   })
+//     .then(num => {
+//       if (num == 1) {
+//         res.send({
+//           message: "User was updated successfully."
+//         });
+//       } else {
+//         res.send({
+//           message: `Cannot update User with id=${id}. Maybe User was not found or req.body is empty!`
+//         });
+//       }
+//     })
+//     .catch(err => {
+//       res.status(500).send({
+//         message: "Error updating User with id=" + id
+//       });
+//     });
+// };
+
+// // Delete a User with the specified id in the request
+// exports.delete = (req, res) => {
+//   const id = req.params.id;
+
+//   User.destroy({
+//     where: { id: id }
+//   })
+//     .then(num => {
+//       if (num == 1) {
+//         res.send({
+//           message: "User was deleted successfully!"
+//         });
+//       } else {
+//         res.send({
+//           message: `Cannot delete User with id=${id}. Maybe User was not found!`
+//         });
+//       }
+//     })
+//     .catch(err => {
+//       res.status(500).send({
+//         message: "Could not delete User with id=" + id
+//       });
+//     });
+// };
+
+// // Delete all Users from the database.
+// exports.deleteAll = (req, res) => {
+//   User.destroy({
+//     where: {},
+//     truncate: false
+//   })
+//     .then(nums => {
+//       res.send({ message: `${nums} Users were deleted successfully!` });
+//     })
+//     .catch(err => {
+//       res.status(500).send({
+//         message:
+//           err.message || "Some error occurred while removing all Users."
+//       });
+//     });
+// };
+
+// // find all published User
+// exports.findAllPublished = (req, res) => {
+//   User.findAll({ where: { status: true } })
+//     .then(data => {
+//       res.send(data);
+//     })
+//     .catch(err => {
+//       res.status(500).send({
+//         message:
+//           err.message || "Some error occurred while retrieving Users."
+//       });
+//     });
+// };
+
+// Update a Customer by the id in the request
+exports.update = (req, res) => {
+  if (!req.body) {
+    return res.status(400).send({
+      message: "Data to update can not be empty!"
+    });
+  }
+
+  const id = req.params.id;
+
+  Customer.findByIdAndUpdate(id, req.body, { useFindAndModify: false })
+    .then(data => {
+      if (!data) {
+        res.status(404).send({
+          message: `Cannot update Customer with id=${id}. Maybe Customer was not found!`
+        });
+      } else res.send({ message: "Customer was updated successfully." });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error updating Customer with id=" + id
+      });
+    });
+};
+
+// Delete a Customer with the specified id in the request
+exports.delete = (req, res) => {
+  const id = req.params.id;
+
+  Customer.findByIdAndRemove(id, { useFindAndModify: false })
+    .then(data => {
+      if (!data) {
+        res.status(404).send({
+          message: `Cannot delete Customer with id=${id}. Maybe Customer was not found!`
+        });
+      } else {
+        res.send({
+          message: "Customer was deleted successfully!"
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Could not delete Customer with id=" + id
+      });
+    });
+};
