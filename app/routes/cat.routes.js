@@ -30,6 +30,7 @@ const express = require("express");
   // Create a new product with multiple images
   router.post("/", upload.single("file"), cats.create);
 
+  // test
   // Retrieve all cats
   router.get("/", cats.findAll);
 
