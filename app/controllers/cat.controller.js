@@ -1,31 +1,33 @@
 const db = require("../models");
 const Cat = db.cats;
+const fs = require("fs");
+  //http://localhost:8090/uploads/7acef58e-da7a-4986-803e-6e717de80577.jpg
+  global.__basedir = __dirname;
 
-// Create and Save a new Cat
-exports.create = (req, res) => {
-  // Validate request
-  if (!req.body.name) {
-    res.status(400).send({ message: "Category Name can not be empty!" });
-    return;
-  }
 
-  // Create a Cat
-  const cat = new Cat({
-    name: req.body.name
-  });
+// Create and Save a new User
+exports.create = async (req, res) => {
+  console.log("Hello Vipul");
 
-  // Save cat in the database
-  cat
-    .save(cat)
-    .then(data => {
-      res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({
-        message:
-          err.message || "Some error occurred while creating the cat."
-      });
+  try {
+    console.log(req.file);
+
+    if (!req.file) {
+      console.log("You must select a file.");
+      return res.status(400).send("You must select a file.");
+    }
+
+    const data = await Cat.create({
+      name: req.body.name,
+      image: req.file.filename
     });
+
+    console.log(data);
+    return res.status(201).send(data);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).send(`Error when trying to upload image: ${error}`);
+  }
 };
 
 // Retrieve all cats from the database.

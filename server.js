@@ -125,7 +125,7 @@ require("./app/routes/wishlist.routes")(app);
 // set port, listen for requests
 const PORT = process.env.PORT || 8090;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}.`);
+  console.log(`Vipul Server is running on port ${PORT}.`);
 });
 
 function initial() {

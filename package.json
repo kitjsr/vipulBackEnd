@@ -21,7 +21,7 @@
     "browserify-zlib": "^0.2.0",
     "buffer": "^6.0.3",
     "cookie-session": "^2.1.0",
-    "cors": "^2.8.5",
+    "cors": "^2.8.6",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.7.0",
