@@ -57,6 +57,6 @@ const fs = require("fs");
 
   // Create a new product
   router.delete("/", products.deleteAll);
-
+ router.get("/category/:category", products.getProductsByCategory);
   app.use("/api/products", router);
 };

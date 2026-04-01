@@ -152,3 +152,23 @@ exports.findAllActive = (req, res) => {
       });
     });
 };
+
+exports.getProductsByCategory = (req, res) => {
+  const category = req.params.category;
+  console.log("Searching for category:", category);
+
+  Product.find({ category: { $regex: new RegExp(category, 'i') } })
+    .then(data => {
+      if (!data || data.length === 0) {
+        return res.status(404).send({ message: "No products found in this category." });
+      }
+      res.send(data);
+    })
+    .catch(err => {
+      console.error("Database query failed:", err);
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving products."
+      });
+    });
+};
