@@ -72,7 +72,7 @@ exports.findOne = (req, res) => {
 
 // Find a cart by userId with populated product details
 // const mongoose = require("mongoose");
-const Product = require("../models/ssproduct.model"); // adjust path as needed
+const Product = require("../models/product.model"); // adjust path as needed
 
 exports.findByUserId = async (req, res) => {
   const userId = req.params.userId;
