@@ -60,7 +60,7 @@ exports.findByUser = async (req, res) => {
     const wishlist = await Wishlist.find({ userId })
       .populate({
         path: "productId",
-        model: "Ssproduct"
+        model: "product"
       });
 
     res.status(200).send(wishlist);
