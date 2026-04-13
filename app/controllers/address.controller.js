@@ -12,16 +12,16 @@ exports.create = (req, res) => {
   // Create a Branch
   const address = new Address({
     userId: req.body.userId,
-    name:req.body.name,
+    name: req.body.name,
     addressLine1: req.body.addressLine1,
-      addressLine2: req.body.addressLine2,
-      city: req.body.city,
-      district: req.body.district,
-      state: req.body.state,
-      pin: req.body.pin,
-      mobile: req.body.mobile,
-      email:req.body.email,
-      addressType:req.body.addressType,
+    addressLine2: req.body.addressLine2,
+    city: req.body.city,
+    district: req.body.district,
+    state: req.body.state,
+    pin: req.body.pin,
+    mobile: req.body.mobile,
+    email: req.body.email,
+    addressType: req.body.addressType,
     active: req.body.active ? req.body.active : false
   });
 
