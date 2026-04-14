@@ -160,8 +160,10 @@ exports.signin = (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
+        firstName: user.firstName,
         roles: authorities,
         accessToken: token, // ← this fixes your frontend issue
+        
       });
     });
 };
