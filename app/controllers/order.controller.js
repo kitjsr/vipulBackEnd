@@ -35,16 +35,35 @@ exports.create = (req, res) => {
 };
 
 // Retrieve all Orders
-exports.findAll = (req, res) => {
-  Order.find()
-    .then(data => res.send(data))
-    .catch(err => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while retrieving orders."
-      });
+exports.findAll = async (req, res) => {
+  try {
+    const data = await Order.find({})
+      .populate("userId") // populate user details
+      .populate("addressId") // populate address details
+      .populate("products.productId"); // populate product details
+
+    res.send(data);
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Some error occurred while retrieving Orders."
     });
+  }
 };
 
+exports.findByUser = async (req, res) => {
+  try {
+    const data = await Order.find({ userId: req.params.userId })
+      .populate("userId")
+      .populate("addressId")
+      .populate("products.productId");
+
+    res.send(data);
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Some error occurred while retrieving Orders."
+    });
+  }
+};
 // Find a single Order by ID
 exports.findOne = (req, res) => {
   const id = req.params.id;
@@ -126,4 +145,175 @@ exports.findAllActive = (req, res) => {
         message: err.message || "Some error occurred while retrieving active orders."
       });
     });
+};
+
+
+exports.dailyReport = async (req, res) => {
+  try {
+    const start = new Date();
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date();
+    end.setHours(23, 59, 59, 999);
+
+    const orders = await Order.find({
+      createdAt: { $gte: start, $lte: end }
+    });
+
+    res.send({
+      date: start.toDateString(),
+      totalOrders: orders.length,
+      orders
+    });
+
+  } catch (error) {
+    res.status(500).send({ message: "Error generating daily report", error });
+  }
+};
+
+// 2. Monthly Report
+exports.monthlyReport = async (req, res) => {
+  try {
+    const { year, month } = req.params;
+
+    const start = new Date(year, month - 1, 1);
+    const end = new Date(year, month, 0, 23, 59, 59, 999);
+
+    const orders = await Order.find({
+      createdAt: { $gte: start, $lte: end }
+    });
+
+    const totalAmount = orders.reduce((sum, o) => sum + o.totalAmount, 0);
+
+    res.send({
+      month,
+      year,
+      totalOrders: orders.length,
+      totalAmount,
+      orders
+    });
+
+  } catch (error) {
+    res.status(500).send({ message: "Error generating monthly report", error });
+  }
+};
+
+// 3. Orders by Status
+exports.ordersByStatus = async (req, res) => {
+  try {
+    const { status } = req.params;
+
+    const orders = await Order.find({ status });
+
+    res.send({
+      status,
+      totalOrders: orders.length,
+      orders
+    });
+
+  } catch (error) {
+    res.status(500).send({ message: "Error retrieving orders by status", error });
+  }
+};
+
+// 4. Summary (Total Orders + Total Revenue)
+exports.summary = async (req, res) => {
+  try {
+    const orders = await Order.find();
+
+    const totalRevenue = orders.reduce((sum, o) => sum + o.totalAmount, 0);
+
+    res.send({
+      totalOrders: orders.length,
+      totalRevenue
+    });
+
+  } catch (error) {
+    res.status(500).send({ message: "Error generating order summary", error });
+  }
+};
+
+exports.chartData = async (req, res) => {
+  try {
+    const result = await Order.aggregate([
+      {
+        $group: {
+          _id: {
+            year: { $year: "$createdAt" },
+            month: { $month: "$createdAt" }
+          },
+          totalAmount: { $sum: "$totalAmount" }
+        }
+      },
+      { $sort: { "_id.year": -1, "_id.month": -1 } },
+      { $limit: 2 }
+    ]);
+
+    // Format month names
+    const labels = result
+      .map(r =>
+        new Date(r._id.year, r._id.month - 1).toLocaleString("en-US", {
+          month: "long"
+        }) +
+        " " +
+        String(r._id.year).slice(-2)
+      )
+      .reverse();
+
+    const data = result.map(r => r.totalAmount).reverse();
+
+    res.send({
+      labels,
+      datasets: [
+        {
+          label: "Order statistics",
+          data,
+          backgroundColor: "rgba(75, 192, 192, 0.5)",
+          borderColor: "rgba(75, 192, 192, 1)",
+          borderWidth: 1
+        }
+      ]
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Error generating chart data", error });
+  }
+};
+exports.topSellingProducts = async (req, res) => {
+  try {
+    const results = await Order.aggregate([
+      { $unwind: "$products" }, // Break array into separate docs
+
+      {
+        $group: {
+          _id: "$products.productId",
+          totalSold: { $sum: "$products.quantity" }
+        }
+      },
+
+      { $sort: { totalSold: -1 } }, // Descending order
+      { $limit: 10 },
+
+      {
+        $lookup: {
+          from: "products",           // collection name in MongoDB
+          localField: "_id",
+          foreignField: "_id",
+          as: "productDetails"
+        }
+      },
+
+      { $unwind: "$productDetails" } // Convert array to object
+    ]);
+
+    res.status(200).send(results);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({
+      message: "Error fetching top selling products",
+      error
+    });
+  }
 };
