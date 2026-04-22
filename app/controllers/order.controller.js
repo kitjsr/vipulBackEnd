@@ -39,8 +39,8 @@ exports.findAll = async (req, res) => {
   try {
     const data = await Order.find({})
       .populate("userId") // populate user details
-      .populate("addressId") // populate address details
-      .populate("products.productId"); // populate product details
+      // .populate("addressId") // populate address details
+      .populate("items.productId"); // populate product details
 
     res.send(data);
   } catch (err) {
@@ -54,8 +54,8 @@ exports.findByUser = async (req, res) => {
   try {
     const data = await Order.find({ userId: req.params.userId })
       .populate("userId")
-      .populate("addressId")
-      .populate("products.productId");
+      // .populate("addressId")
+      .populate("items.productId");
 
     res.send(data);
   } catch (err) {

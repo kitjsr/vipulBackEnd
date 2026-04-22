@@ -28,6 +28,6 @@ module.exports = mongoose => {
     return object;
   });
 
-  const Order = mongoose.model("address", schema);
-  return Order;
+  const Address = mongoose.model("address", schema);
+  return Address;
 };
