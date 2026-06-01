@@ -59,8 +59,8 @@ app.get("/", (req, res) => {
 ///////////
 // Function to serve all static files
 // inside public directory.
+app.use('/uploads', express.static('app/uploads'));
 app.use(express.static('public'));
-app.use('/uploads', express.static('uploads'));
 //////////////
 app.post('/upload', upload.single('file'), (req, res) => {
   try {
