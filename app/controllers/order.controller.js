@@ -38,9 +38,9 @@ exports.create = (req, res) => {
 exports.findAll = async (req, res) => {
   try {
     const data = await Order.find({})
-      .populate("userId") // populate user details
-      // .populate("addressId") // populate address details
-      .populate("items.productId"); // populate product details
+      .populate("userId") 
+      .populate("addressId") 
+      .populate("items.productId"); 
 
     res.send(data);
   } catch (err) {
@@ -54,7 +54,7 @@ exports.findByUser = async (req, res) => {
   try {
     const data = await Order.find({ userId: req.params.userId })
       .populate("userId")
-      // .populate("addressId")
+      .populate("addressId")
       .populate("items.productId");
 
     res.send(data);
@@ -65,18 +65,32 @@ exports.findByUser = async (req, res) => {
   }
 };
 // Find a single Order by ID
-exports.findOne = (req, res) => {
+exports.findOne = async (req, res) => {
   const id = req.params.id;
 
-  Order.findById(id)
-    .then(data => {
-      if (!data) {
-        res.status(404).send({ message: "Not found Order with id " + id });
-      } else res.send(data);
-    })
-    .catch(err => {
-      res.status(500).send({ message: "Error retrieving Order with id=" + id });
+   try {
+    const data = await Order.findById(id)
+      .populate("userId")
+      .populate("addressId")
+      .populate("items.productId");
+
+    res.send(data);
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Some error occurred while retrieving Orders."
     });
+  }
+  // Order.findById(id).populate("userId") 
+  //     // .populate("address") 
+  //     .populate("items.productId")
+  //   .then(data => {
+  //     if (!data) {
+  //       res.status(404).send({ message: "Not found Order with id " + id });
+  //     } else res.send(data);
+  //   })
+  //   .catch(err => {
+  //     res.status(500).send({ message: "Error retrieving Order with id=" + id });
+  //   });
 };
 
 // Update an Order by ID

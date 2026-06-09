@@ -11,7 +11,7 @@ module.exports = mongoose => {
       
       addressId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Address',
+        ref: 'address',
         required: true
       },
       active: Boolean,
