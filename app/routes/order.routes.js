@@ -24,5 +24,15 @@ module.exports = app => {
   // Delete all Orders
   router.delete("/", orders.deleteAll);
 
+  // Chart
+  router.get("/chartdata", orders.chartData);
+  router.get("/top-selling-products", orders.topSellingProducts);
+
+  // REPORTS
+  router.get("/reports/daily", orders.dailyReport);
+  router.get("/reports/summary", orders.summary);
+  router.get("/reports/status/:status", orders.ordersByStatus);
+  router.get("/reports/monthly/:year/:month", orders.monthlyReport);
+
   app.use("/api/orders", router);
 };
