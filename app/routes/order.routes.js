@@ -12,8 +12,6 @@ module.exports = app => {
   // Retrieve all active Orders
   router.get("/active", orders.findAllActive);
 
-  // Retrieve a single Order with id
-  router.get("/:id", orders.findOne);
 
   // Update an Order with id
   router.put("/:id", orders.update);
@@ -28,6 +26,10 @@ module.exports = app => {
   router.get("/chartdata", orders.chartData);
   router.get("/top-selling-products", orders.topSellingProducts);
 
+
+  
+  // Retrieve a single Order with id
+  router.get("/:id", orders.findOne);
   // REPORTS
   router.get("/reports/daily", orders.dailyReport);
   router.get("/reports/summary", orders.summary);

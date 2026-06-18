@@ -120,7 +120,7 @@ require("./app/routes/order.routes")(app);
 require("./app/routes/ssorder.routes")(app);
 require("./app/routes/follow.routes")(app);
 require("./app/routes/address.routes")(app);
-require("./app/routes/wishlist.routes")(app);
+// require("./app/routes/wishlist.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8090;

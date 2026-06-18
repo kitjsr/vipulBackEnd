@@ -278,7 +278,7 @@ exports.topSellingProducts = async (req, res) => {
 
       {
         $lookup: {
-          from: "ssproducts",           // collection name in MongoDB
+          from: "products",           // collection name in MongoDB
           localField: "_id",
           foreignField: "_id",
           as: "productDetails"
