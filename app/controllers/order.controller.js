@@ -60,6 +60,21 @@ exports.findOne = (req, res) => {
     });
 };
 
+exports.findByUser = async (req, res) => {
+  try {
+    const data = await Order.find({ userId: req.params.userId })
+      .populate("userId")
+      // .populate("addressId")
+      .populate("items.productId");
+
+    res.send(data);
+  } catch (err) {
+    res.status(500).send({
+      message: err.message || "Some error occurred while retrieving Orders."
+    });
+  }
+};
+
 // Update an Order by ID
 exports.update = (req, res) => {
   if (!req.body) {

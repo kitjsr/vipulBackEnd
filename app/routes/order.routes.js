@@ -35,6 +35,7 @@ module.exports = app => {
   router.get("/reports/summary", orders.summary);
   router.get("/reports/status/:status", orders.ordersByStatus);
   router.get("/reports/monthly/:year/:month", orders.monthlyReport);
+  router.get("/user/:userId", orders.findByUser);
 
   app.use("/api/orders", router);
 };
