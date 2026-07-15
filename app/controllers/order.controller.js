@@ -50,6 +50,7 @@ exports.findOne = (req, res) => {
   const id = req.params.id;
 
   Order.findById(id)
+    .populate("items.productId")
     .then(data => {
       if (!data) {
         res.status(404).send({ message: "Not found Order with id " + id });
