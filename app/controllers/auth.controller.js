@@ -160,10 +160,8 @@ exports.signin = (req, res) => {
         id: user._id,
         username: user.username,
         email: user.email,
-        firstName: user.firstName,
         roles: authorities,
         accessToken: token, // ← this fixes your frontend issue
-        
       });
     });
 };
@@ -174,5 +172,34 @@ exports.signout = async (req, res) => {
     return res.status(200).send({ message: "You've been signed out!" });
   } catch (err) {
     this.next(err);
+  }
+};
+
+exports.findAllUser = (req, res) => {
+  // const name = req.query.name;
+  // var condition = name ? { name: { $regex: new RegExp(name), $options: "i" } } : {};
+
+  User.find()
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving Users."
+      });
+    });
+}; 
+exports.getUserCount = async (req, res) => {
+  try {
+    const count = await User.countDocuments();
+
+    res.status(200).send({
+      totalUsers: count,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: err.message,
+    });
   }
 };
