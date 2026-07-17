@@ -25,4 +25,5 @@ module.exports = function(app) {
   
   app.get("/api/auth/alluser", controller.findAllUser);
   app.get("/api/auth/usercount", controller.getUserCount);
+  app.delete("/api/auth/user/:id", controller.delete);
 };
