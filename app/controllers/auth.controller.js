@@ -158,6 +158,7 @@ exports.signin = (req, res) => {
       // ✅ Return the access token to the client
       res.status(200).send({
         id: user._id,
+        fistName: user.firstName,
         username: user.username,
         email: user.email,
         roles: authorities,
